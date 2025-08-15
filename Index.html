@@ -3,201 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fridge Tracker 🥛🍞</title>
+<title>FridgeMind - Cute Waste Reducer</title>
 <style>
-body {
+  body {
     font-family: 'Poppins', sans-serif;
-    background: #FFF0F5;
-    color: #333;
-    padding: 30px;
+    background: linear-gradient(135deg, #ffe5ec, #e0f7fa);
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
     text-align: center;
-}
-
-h1 {
-    color: #FFB6C1;
-}
-
-input, button {
-    padding: 10px 15px;
+    color: #444;
+    padding: 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: auto;
+    padding: 10px;
+  }
+  .input-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  input, button {
+    padding: 10px;
     border-radius: 20px;
     border: none;
-    margin: 5px;
-    font-size: 16px;
-}
-
-input {
-    width: 150px;
-}
-
-.add-button {
-    background-color: #C1FFD7;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.add-button:hover {
-    transform: scale(1.1);
-    background-color: #A3F7D3;
-}
-
-.item-card {
-    background: #FFFACD;
-    margin: 10px auto;
-    padding: 15px;
-    width: 300px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.item-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-}
-
-.expiry-badge {
-    background-color: #FF8C69;
+    font-size: 14px;
+  }
+  input {
+    flex: 1;
+    min-width: 120px;
+  }
+  button {
+    background-color: #ffb6c1;
     color: white;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.item-name {
-    font-weight: bold;
-    font-size: 16px;
-}
-
-.expiry-date {
-    font-size: 14px;
-    color: #333;
-}
-
-.recipe-suggestion {
-    font-size: 14px;
-    color: #555;
-    font-style: italic;
-    margin-top: 2px;
-}
-
-.done-button {
-    background: #FFB6C1;
     cursor: pointer;
-    padding: 8px 12px;
+    transition: 0.3s;
+  }
+  button:hover {
+    background-color: #ff9eb3;
+  }
+  .item-card {
+    background: white;
     border-radius: 20px;
-    border: none;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .near-expiry {
+    background-color: #ffcccb;
+    color: #b71c1c;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .suggestion {
+    font-size: 13px;
+    color: #777;
     margin-top: 5px;
-    font-size: 14px;
-    align-self: flex-end;
-}
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
-
-<h1>Fridge Tracker 🥛🍞</h1>
-<p>Enter your fridge items and their expiry dates! 🌸</p>
-
-<input type="text" id="itemName" placeholder="Item name">
-<input type="date" id="itemExpiry">
-<button class="add-button" onclick="addItem()">➕ Add Item</button>
-
-<div id="itemList"></div>
+  <h1>🥕 FridgeMind - Cute Waste Reducer</h1>
+  <div class="container">
+    <div class="input-section">
+      <input type="text" id="itemName" placeholder="Enter item name 🥗">
+      <input type="date" id="expiryDate">
+      <button onclick="addItem()">Add Item ➕</button>
+    </div>
+    <div id="itemList"></div>
+  </div>
 
 <script>
-// One-line recipe suggestions for pantry items
-const recipeSuggestions = {
-    "Tomato": "Make Tomato Chutney 🍅",
-    "Onion": "Make Onion Chutney 🧅",
-    "Garlic": "Make Garlic Pickle 🧄",
-    "Carrot": "Make Carrot Pachadi 🥕",
-    "Eggplant": "Make Brinjal Curry 🍆",
-    "Lemon": "Make Lemon Rice 🍋",
-    "Green Chili": "Make Chili Pickle 🌶️",
-    "Ginger": "Make Ginger Chutney 🌿",
-    "Milk": "Make Kheer 🥛",
-    "Yogurt": "Make Curd Rice 🍶",
-    "Paneer": "Make Paneer Masala 🧀",
-    "Coconut": "Make Coconut Chutney 🥥",
-    "Rice": "Make Lemon Rice 🍚",
-    "Wheat Flour": "Make Chapati 🌾",
-    "Lentils": "Make Dal Fry 🥣",
-    "Tamarind": "Make Tamarind Chutney 🥭"
+const pantry = {
+  "tomato": { emoji: "🍅", recipes: ["Tomato Rasam", "Tomato Chutney", "Tomato Rice"] },
+  "onion": { emoji: "🧅", recipes: ["Onion Pakora", "Onion Sambar", "Onion Chutney"] },
+  "potato": { emoji: "🥔", recipes: ["Aloo Paratha", "Potato Curry", "Masala Dosa Filling"] },
+  "milk": { emoji: "🥛", recipes: ["Paneer", "Kheer", "Curd"] },
+  "rice": { emoji: "🍚", recipes: ["Curd Rice", "Lemon Rice", "Veg Pulao"] },
+  "dal": { emoji: "🍲", recipes: ["Dal Tadka", "Sambar", "Paruppu Curry"] },
+  "carrot": { emoji: "🥕", recipes: ["Carrot Halwa", "Carrot Poriyal", "Carrot Soup"] },
+  "cabbage": { emoji: "🥬", recipes: ["Cabbage Poriyal", "Cabbage Curry", "Cabbage Pakoda"] },
+  "beans": { emoji: "🫘", recipes: ["Beans Poriyal", "Beans Thoran", "Beans Curry"] },
+  "brinjal": { emoji: "🍆", recipes: ["Baingan Bharta", "Ennai Kathirikai", "Brinjal Curry"] },
+  "cauliflower": { emoji: "🌸", recipes: ["Gobi Manchurian", "Aloo Gobi", "Cauliflower Curry"] },
+  "chilli": { emoji: "🌶️", recipes: ["Mirchi Bajji", "Green Chilli Pickle", "Stuffed Chilli"] },
+  "garlic": { emoji: "🧄", recipes: ["Garlic Chutney", "Garlic Pickle", "Lahsun Dal"] },
+  "ginger": { emoji: "🌱", recipes: ["Ginger Tea", "Inji Puli", "Ginger Curry"] },
+  "curd": { emoji: "🍶", recipes: ["Mor Kuzhambu", "Curd Rice", "Raita"] },
+  "paneer": { emoji: "🧀", recipes: ["Paneer Butter Masala", "Paneer Bhurji", "Paneer Tikka"] },
+  "spinach": { emoji: "🥬", recipes: ["Palak Paneer", "Spinach Poriyal", "Keerai Masiyal"] },
+  "mango": { emoji: "🥭", recipes: ["Mango Pickle", "Mango Lassi", "Aamras"] },
+  "banana": { emoji: "🍌", recipes: ["Banana Chips", "Banana Halwa", "Banana Smoothie"] },
+  "egg": { emoji: "🥚", recipes: ["Egg Curry", "Egg Burji", "Masala Omelette"] }
 };
 
-function isNearExpiry(dateStr) {
-    const today = new Date();
-    const expiry = new Date(dateStr);
-    const diffTime = expiry - today;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    return diffDays <= 3;
-}
-
 function addItem() {
-    const nameInput = document.getElementById('itemName');
-    const expiryInput = document.getElementById('itemExpiry');
+  const nameInput = document.getElementById("itemName");
+  const expiryInput = document.getElementById("expiryDate");
+  const name = nameInput.value.trim().toLowerCase();
+  const expiry = new Date(expiryInput.value);
 
-    const itemName = nameInput.value.trim();
-    const itemExpiry = expiryInput.value;
+  if (!name || isNaN(expiry)) return;
 
-    if(!itemName || !itemExpiry) return;
+  const today = new Date();
+  const diffTime = expiry - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    const card = document.createElement('div');
-    card.className = 'item-card';
+  let itemHTML = `<div class="item-card"><div class="item-header">`;
 
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'item-info';
+  if (pantry[name]) {
+    itemHTML += `<strong>${pantry[name].emoji} ${name.charAt(0).toUpperCase() + name.slice(1)}</strong>`;
+  } else {
+    itemHTML += `<strong>🍽️ ${name.charAt(0).toUpperCase() + name.slice(1)}</strong>`;
+  }
 
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'item-name';
-    nameSpan.textContent = itemName + " 🥰";
-    infoDiv.appendChild(nameSpan);
-
-    const expirySpan = document.createElement('span');
-    expirySpan.className = 'expiry-date';
-    expirySpan.textContent = "Expiry: " + itemExpiry;
-    infoDiv.appendChild(expirySpan);
-
-    // Show near-expiry badge + recipe if applicable
-    if(isNearExpiry(itemExpiry)) {
-        const badge = document.createElement('span');
-        badge.className = 'expiry-badge';
-        badge.textContent = "⚠️ Near Expiry!";
-        infoDiv.insertBefore(badge, nameSpan);
-
-        // Show one-line recipe suggestion
-        if(recipeSuggestions[itemName]) {
-            const recipe = document.createElement('span');
-            recipe.className = 'recipe-suggestion';
-            recipe.textContent = recipeSuggestions[itemName];
-            infoDiv.appendChild(recipe);
-        }
-
-        card.style.backgroundColor = "#FFD1DC"; // pastel warning pink
+  if (diffDays <= 3) {
+    itemHTML += `<span class="near-expiry">Near Expiry!</span></div>`;
+    if (pantry[name]) {
+      const recipes = pantry[name].recipes;
+      const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+      itemHTML += `<div class="suggestion">🍳 Try making ${randomRecipe}</div>`;
     }
+  } else {
+    itemHTML += `</div>`;
+  }
 
-    const doneButton = document.createElement('button');
-    doneButton.className = 'done-button';
-    doneButton.textContent = "✅ Used";
-    doneButton.onclick = () => {
-        card.style.backgroundColor = "#D3F8E2"; // soft green
-        infoDiv.innerHTML = itemName + " 🌟 Used!";
-    }
+  itemHTML += `</div>`;
 
-    card.appendChild(infoDiv);
-    card.appendChild(doneButton);
+  document.getElementById("itemList").innerHTML += itemHTML;
 
-    document.getElementById('itemList').appendChild(card);
-
-    nameInput.value = "";
-    expiryInput.value = "";
+  nameInput.value = "";
+  expiryInput.value = "";
 }
 </script>
-
 </body>
 </html>
